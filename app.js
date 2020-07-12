@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'http://localhost:8080',
+    origin: 'http://localhost:3000',
   })
 );
 
@@ -36,10 +36,11 @@ app.get('/', (req, res) => {
 //app.use(rotas);
 app.post('/grade', controller.create);
 app.get('/grade/:id', controller.findOne);
-app.get('/grades', controller.findAll);
+app.get('/grade?name:', controller.findByName);
+app.get('/grade', controller.findAll);
 app.put('/grade/:id', controller.update);
 app.delete('/grade/:id', controller.remove);
-app.delete('/grades/', controller.removeAll);
+app.delete('/grade/', controller.removeAll);
 
 app.listen(process.env.PORT || 8081, () => {
   console.log(`Servidor em execucao na porta ${process.env.PORT}`);
