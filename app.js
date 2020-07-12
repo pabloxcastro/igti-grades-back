@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-const { logger } = require('./config/logger.js');
+//const { logger } = require('./config/logger.js');
 const { controller } = require('./controllers/gradeController.js');
 //const { rotas } = require("./routes/gradeRouter.js");
 
@@ -13,9 +13,9 @@ try {
     useUnifiedTopology: true,
     useFindAndModify: false,
   });
-  logger.info('Conectado ao banco de dados');
+  //logger.info('Conectado ao banco de dados');
 } catch (error) {
-  logger.error(`Erro ao conectar no banco de dados! ${error}`);
+  //logger.error(`Erro ao conectar no banco de dados! ${error}`);
 }
 
 const app = express();
