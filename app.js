@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'https://quiet-tor-88872.herokuapp.com', //'http://localhost:3000',
+    origin: 'https://dry-cove-71709.herokuapp.com/', //https://quiet-tor-88872.herokuapp.com', //'http://localhost:3000',
   })
 );
 
