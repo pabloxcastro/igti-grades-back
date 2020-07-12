@@ -1,96 +1,156 @@
-import { db } from '../models/index.js';
-import { logger } from '../config/logger.js';
+const gradeModel = require("../models/grade.js");
+const { logger } = require("../config/logger.js");
 
+// OK
 const create = async (req, res) => {
   try {
-    res.send();
+    const { name, subject, type, value } = req.body;
+
+    const grade = await gradeModel.create({
+      name: name,
+      subject: subject,
+      type: type,
+      value: value,
+    });
+
+    res.send({ grade, name, subject, type, value });
+
     logger.info(`POST /grade - ${JSON.stringify()}`);
   } catch (error) {
     res
       .status(500)
-      .send({ message: error.message || 'Algum erro ocorreu ao salvar' });
+      .send({ message: error.message || "Algum erro ocorreu ao salvar" });
     logger.error(`POST /grade - ${JSON.stringify(error.message)}`);
   }
 };
 
-const findAll = async (req, res) => {
-  const name = req.query.name;
-
-  //condicao para o filtro no findAll
-  var condition = name
-    ? { name: { $regex: new RegExp(name), $options: 'i' } }
-    : {};
-
-  try {
-    res.send();
-    logger.info(`GET /grade`);
-  } catch (error) {
-    res
-      .status(500)
-      .send({ message: error.message || 'Erro ao listar todos os documentos' });
-    logger.error(`GET /grade - ${JSON.stringify(error.message)}`);
-  }
-};
-
+// OK
 const findOne = async (req, res) => {
   const id = req.params.id;
 
   try {
-    res.send();
+    const grade = await gradeModel.findOne({ _id: id });
+
+    if (!grade) {
+      return res.send({ message: "Grade não encontrada" });
+    }
+
+    res.send(grade);
 
     logger.info(`GET /grade - ${id}`);
   } catch (error) {
-    res.status(500).send({ message: 'Erro ao buscar o Grade id: ' + id });
+    res.status(500).send({ message: "Erro ao buscar o Grade id: " + id });
     logger.error(`GET /grade - ${JSON.stringify(error.message)}`);
   }
 };
 
+// OK
+const findAll = async (req, res) => {
+  try {
+    const name = req.body.name;
+
+    //condicao para o filtro no findAll
+    const condition = name
+      ? { name: { $regex: new RegExp(name), $options: "i" } }
+      : {};
+
+    const grades = await gradeModel.find(condition);
+
+    res.send(grades);
+    logger.info(`GET /grade`);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: error.message || "Erro ao listar todos os documentos" });
+    logger.error(`GET /grade - ${JSON.stringify(error.message)}`);
+  }
+};
+
+// Update
 const update = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({
-      message: 'Dados para atualizacao vazio',
+      message: "Dados para atualizacao vazio",
     });
   }
 
   const id = req.params.id;
 
+  const gradeFound = await gradeModel.findOne({ _id: id });
+
+  if (!gradeFound) {
+    return res.send({ message: "Grade não encontrada" });
+  }
+
+  const { name, subject, type, value } = req.body;
+
+  const grade = await gradeModel.updateOne(
+    { _id: id },
+    { $set: { name: name, subject: subject, type: type, value: value } }
+  );
+
   try {
-    res.send({ message: 'Grade atualizado com sucesso' });
+    res.send({ message: "Grade atualizado com sucesso", grade });
 
     logger.info(`PUT /grade - ${id} - ${JSON.stringify(req.body)}`);
   } catch (error) {
-    res.status(500).send({ message: 'Erro ao atualizar a Grade id: ' + id });
+    res.status(500).send({ message: "Erro ao atualizar a Grade id: " + id });
     logger.error(`PUT /grade - ${JSON.stringify(error.message)}`);
   }
 };
 
+// OK
 const remove = async (req, res) => {
-  const id = req.params.id;
-
   try {
-    res.send({ message: 'Grade excluido com sucesso' });
+    const id = req.params.id;
+
+    const grade = await gradeModel.deleteOne({ _id: id });
+
+    if (grade.deletedCount === 0) {
+      return res.send({ message: "Grade não encontrada" });
+    }
+
+    res.send({ grade });
 
     logger.info(`DELETE /grade - ${id}`);
   } catch (error) {
     res
       .status(500)
-      .send({ message: 'Nao foi possivel deletar o Grade id: ' + id });
+      .send({ message: "Nao foi possivel deletar o Grade id: " + id });
     logger.error(`DELETE /grade - ${JSON.stringify(error.message)}`);
   }
 };
 
+// OK
 const removeAll = async (req, res) => {
-  const id = req.params.id;
-
   try {
+    const name = req.body.name;
+    //condicao para o filtro no findAll
+    const condition = name
+      ? { name: { $regex: new RegExp(name), $options: "i" } }
+      : {};
+
+    const grades = await gradeModel.deleteMany(condition);
+
+    if (grades.deletedCount === 0) {
+      return res.send({ message: "Grade não encontrada" });
+    }
+
     res.send({
       message: `Grades excluidos`,
     });
     logger.info(`DELETE /grade`);
   } catch (error) {
-    res.status(500).send({ message: 'Erro ao excluir todos as Grades' });
+    res.status(500).send({ message: "Erro ao excluir todos as Grades" });
     logger.error(`DELETE /grade - ${JSON.stringify(error.message)}`);
   }
 };
 
-export default { create, findAll, findOne, update, remove, removeAll };
+module.exports.controller = {
+  create,
+  findAll,
+  findOne,
+  update,
+  remove,
+  removeAll,
+};
