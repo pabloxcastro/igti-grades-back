@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'https://dry-cove-71709.herokuapp.com/', //https://quiet-tor-88872.herokuapp.com', //'http://localhost:3000',
+    origin: process.env.URL,
   })
 );
 
@@ -42,6 +42,6 @@ app.put('/grade/:id', controller.update);
 app.delete('/grade/:id', controller.remove);
 app.delete('/grade/', controller.removeAll);
 
-app.listen(process.env.PORT || 8081, () => {
+app.listen(process.env.PORT || 3333, () => {
   console.log(`Servidor em execucao na porta ${process.env.PORT}`);
 });
